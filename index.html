@@ -3,17 +3,19 @@
   <head>
   </head>
   <body>
+    <form action="/run-query" method="POST">
    <p>Type in the types of the input(s) and output. If your program has more than one input, separate the inputs with commas. Separate the input(s) from the outputs with a : symbol.</p>
-   <input type="text" id="typesigs" value="Int,Int:Int"> 
+   <input type="text" id="typesigs" name="typesigs" value="Int,Int:Int"> 
      <p>Type in your input/output tuples. If your program has more than one input, separate the inputs with commas. Separate the input(s) from the outputs with a : symbol. Separate different input,output tuples with the | symbol:</p>
-     <input type="text" id="inputoutputs" value="1,2:2|5,6:6|2,6:6"> 
+     <input type="text" id="inputoutputs" name="inputoutputs" value="1,2:2|5,6:6|2,6:6"> 
 
      <button id="button1">Generate SyGuS query</button>
+    </form>
 
      <p id="output1"></p>
 
      
-     <p>Take that output and run it through a SyGuS solver. Then, paste its output here:</p>
+     <p>If Javascript code does not automatically appear, the API server is not configured to take client-side output. Take the SyGuS query and run it through a SyGuS solver on your machine. Then, paste its output here:</p>
      <input type="text" id="sygusoutput" value=""> 
      <button id="button2">Generate JS Solution</button>
      <p id="output2"></p>
