@@ -69,9 +69,21 @@ const server = http.createServer((req, res) => {
                 relevant_part = sygusSol.split('\n')[1]
                 let javascript_sol = generateCode(relevant_part)
                 console.log(javascript_sol)
-                res.writeHead(200, {'Content-Type' : 'text/plain'});
-                res.write(javascript_sol);
-                res.end();
+                fs.readFile('./index.html', 'utf8', (err, data) => {
+                    if (err) {
+                      console.error(err);
+                      res.writeHead(200, {'Content-Type' : 'text/plain'});
+                      res.write(javascript_sol)
+                      res.end()
+                      return;
+                    }
+                    res.writeHead(200, {'Content-Type' : "text/html"});
+                    let data2 =data.replace('<p id="output1"></p>','<p id="output1">' + javascript_sol + '</p>')
+                    res.write(data2)
+                    res.end()
+                    return
+                  });
+                //res.end();
                 return;
             }
 
@@ -129,17 +141,17 @@ function generateCode(inputSolution) {
   function generateSyg(rawtypesigs, rawinputoutputs) {
     const base_string = `(set-logic LIA)
 (synth-fun synthesizedFunc (%INPUT-TYPES%) %OUTPUT-TYPE%
-((Start %OUTPUT-TYPE% (nt%OUTPUT-TYPE%))
-    (ntInt Int ( 0 1 2 3 4 5 %VARIABLES%
-      (+ ntInt ntInt)
-      (- ntInt ntInt)
-      (* ntInt ntInt)
-      ))
-    (ntBool Bool ( true false
-    (and ntBool ntBool)
-    (or ntBool ntBool)
-    (not ntBool)
-    ))))
+;; Declare the non-terminals that would be used in the grammar
+((I Int) (B Bool))
+
+;; Define the grammar for allowed implementations of max2
+((I Int (%VARIABLES% 0 1
+         (+ I I) (- I I) (* I I)
+         (ite B I I)))
+ (B Bool ((and B B) (or B B) (not B)
+          (> I I) (< I I) (= I I) (<= I I) (>= I I))))
+)
+
 
 
 
@@ -196,7 +208,7 @@ function generateCode(inputSolution) {
 	}
 	try{	
 		console.time('label'+ queryString);
-		cvc4Output = execSync('doalarm () { perl -e \'alarm shift; exec @ARGV\' "$@"; }\n doalarm 8 cvc4 '+queryFilePath).toString();
+		cvc4Output = execSync('doalarm () { perl -e \'alarm shift; exec @ARGV\' "$@"; }\n doalarm 8 cvc5 '+queryFilePath).toString();
 		console.timeEnd('label'+ queryString);
 		return cvc4Output;
 	}
